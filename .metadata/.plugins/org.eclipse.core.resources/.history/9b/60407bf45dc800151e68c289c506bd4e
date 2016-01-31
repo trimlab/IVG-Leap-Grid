@@ -1,0 +1,11 @@
+import java.awt.*;
+import javax.swing.*;
+
+public class GridPanel extends JPanel{
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        g.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight());
+    }
+}

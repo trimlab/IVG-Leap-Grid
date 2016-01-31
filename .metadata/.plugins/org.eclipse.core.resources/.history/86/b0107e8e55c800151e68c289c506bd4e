@@ -1,0 +1,54 @@
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import com.leapmotion.leap.*;
+
+public class Main {
+
+	public static void main(String[] args) {
+		Properties prop = new Properties();
+		InputStream input = null;
+
+		try {
+
+			input = new FileInputStream("app.cfg");
+
+			// load a properties file
+			prop.load(input);
+
+			// get the property value and print it out
+			System.out.println(prop.getProperty("max-x"));
+			System.out.println(prop.getProperty("max-y"));
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		System.exit(0);
+		
+        //Create listener and attach
+        LeapListener listener = new LeapListener();
+        Controller controller = new Controller();
+        controller.addListener(listener);
+
+        //run until enter is pressed
+        System.out.println("Press Enter to quit...");
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        controller.removeListener(listener);
+	}
+
+}

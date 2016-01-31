@@ -1,0 +1,13 @@
+import java.awt.*;
+import javax.swing.*;
+
+public class GridPanel extends JPanel{
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        g.drawString("BLAH", 20, 20);
+        g.drawRect(200, 200, 200, 200);
+    }
+}

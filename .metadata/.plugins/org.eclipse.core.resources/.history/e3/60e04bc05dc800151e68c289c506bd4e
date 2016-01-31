@@ -1,0 +1,22 @@
+import java.awt.*;
+import javax.swing.*;
+
+public class GridFrame extends JFrame{
+
+	private JPanel panel = new JPanel();
+	private Container container;
+	
+	public GridFrame(){
+
+		panel.setBackground(Color.white);
+
+		container = getContentPane();
+		container.add(panel, BorderLayout.CENTER);
+	}
+	
+
+	public void paintComponent(Graphics g){
+		
+		
+	}
+}

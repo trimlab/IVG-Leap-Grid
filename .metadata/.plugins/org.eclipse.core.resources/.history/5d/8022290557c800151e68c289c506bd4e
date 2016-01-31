@@ -1,0 +1,10 @@
+#controller settings
+max-x=200
+min-x=-200
+max-y=200
+min-y=-200
+
+#display settings
+window-title = Tri-M IVG test
+window-width = 300
+window-height = 300
