@@ -1,0 +1,44 @@
+--Main--
+	#2x2#
+	--Food--
+		#1x3#
+		--Fruits--
+			#3x2#
+			-Apple-
+			-Orange-
+			-Banana-
+			-Kiwi-
+			-Pineapple-
+			-Raspberry-	
+		--Vegetables--
+			#2x2#
+			-Tomato-
+			-Carrot-
+			-Lettuce-
+			-Broccoli-
+		--Candy--
+			#3x2#
+			-Sucker-
+			-Gum-
+			-M&Ms-
+			-Chocolate Bar-
+			-Skittles-
+			-Smarties-
+	--Animals--
+		#1x2#
+		--Land--
+			#2x2#
+			-Dog-
+			-Cat-
+			-Bird-
+			-Squirrel-
+		--Water--
+			#3x2#
+			-Fish-
+			-Dolphin-
+			-Whale-
+			-Shark-
+			-Jellyfish-
+			-Octopus-
+	--Household Items--
+	--Transportation--

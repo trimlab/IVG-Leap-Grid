@@ -7,6 +7,8 @@ import javax.swing.JFrame;
 
 import com.leapmotion.leap.*;
 
+import Menu.Menu;
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -31,7 +33,7 @@ public class Main {
 			}
 		}
 		
-		setupMenu();
+		Menu menu = new Menu("menu.cfg");
 
         GridFrame gui = new GridFrame();
 		gui.setTitle(prop.getProperty("window-title"));
@@ -45,10 +47,6 @@ public class Main {
         //create listener and attach
         LeapListener listener = new LeapListener();
         Controller controller = new Controller();
-        controller.addListener(listener);
-	}
-
-	public static void setupMenu(){
-		
+        //controller.addListener(listener);
 	}
 }

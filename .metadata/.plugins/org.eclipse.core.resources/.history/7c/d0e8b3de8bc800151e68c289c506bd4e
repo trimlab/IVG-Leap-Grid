@@ -1,0 +1,40 @@
+package Menu;
+
+public class Menu {
+
+	private MenuNode cursor;
+	
+	public Menu(String file){
+		
+	}
+	
+	public MenuNode getCursor(){
+		return cursor;
+	}
+	
+	private class MenuNode{
+		private MenuNode parent = null;
+		private MenuNode[] children;
+		private String name = "";
+		
+		public void setParent(MenuNode p){
+			parent = p;
+		}
+		
+		public void setChild(int i, MenuNode c){
+			children[i] = c;
+		}
+		
+		public String getName(){
+			return name;
+		}
+		
+		public String[] getChildrenNames(){
+			String[] ret = new String[children.length];
+			for(int i = 0; i < children.length; i++){
+				ret[i] = children[i].getName();			
+			}
+			return ret;
+		}
+	}
+}

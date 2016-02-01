@@ -1,0 +1,8 @@
+package Menu;
+
+public class Menu {
+
+	public Menu(String file){
+		
+	}
+}
