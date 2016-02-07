@@ -31,14 +31,31 @@ public class Menu {
 		    }
 		}
 
-		cursor = processMenuList(list);
+		cursor = processMenuList(list, 0, 0);
+		System.out.println(cursor);
 	}
 	
-	private MenuNode processMenuList(List<String> list){
+	private MenuNode processMenuList(List<String> list, int depth, int line){
+		MenuNode m;
+		//System.out.println("Hit: " + list.get(line).replace("\t", "") + "\n\tLine: " + line + "\n\tDepth:" + depth);
 		
-        //int tabs = text.length() - text.replaceAll("\t", "").length();
-		
-		return null;
+		//if next line is indented once more
+		if(line + 1 < list.size() && countTabs(list.get(line + 1)) == depth + 1){
+			m = new MenuNode(list.get(line).replace("\t", ""), list.get(line + 1).replace("\t", ""));
+			line += 2; //skip this line and dimensions line
+			
+			//create and add each child
+			for(int i = 0; countTabs(list.get(line)) == depth + 1; i++){
+				m.setChild(i, processMenuList(list, depth + 1, line));
+				line = findNextLine(list, line);
+				if(line < 0) break;
+			}
+		}else{
+			//no children
+			m = new MenuNode(list.get(line).replace("\t", ""));
+		}
+	
+		return m;
 	}
 	
 	public MenuNode getCursor(){
@@ -66,67 +83,17 @@ public class Menu {
 		return false;
 	}
 	
-	private class MenuNode{
-		private MenuNode parent = null;
-		private MenuNode[] children;
-		private String name = "";
-		private int rows;
-		private int cols;
-		
-		public void MenuNode(String name, String dimensions){
-			this.name = name;
-			String[] d = dimensions.split("x");
-			cols = Integer.parseInt(d[0]);
-			rows = Integer.parseInt(d[1]);
-			children = new MenuNode[cols*rows];
-		}
-		
-		public void MenuNode(String name){
-			this.name = name;
-			children = null;
-		}
-		
-		public void setParent(MenuNode p){
-			parent = p;
-		}		
-		
-		public MenuNode getParent(){
-			return parent;
-		}
-		
-		public void setChild(int i, MenuNode c){
-			children[i] = c;
-		}
-		
-		public MenuNode getChild(int i){
-			return children[i];
-		}
-		
-		public String getName(){
-			return name;
-		}
-		
-		public boolean isLeaf(){
-			if(children == null) return true;
-			else return false;
-		}
-		
-		public String[] getChildrenNames(){
-			String[] ret = new String[children.length];
-			for(int i = 0; i < children.length; i++){
-				ret[i] = children[i].getName();			
-			}
-			return ret;
-		}
-		
-		public String toString(){
-			String ret = name;
-			ret += "\nDimensions: " + cols + "x" + rows + "\n";
-			ret += "\nChildren: " + String.join(", ", getChildrenNames()) + "\n\n";
-			for(int i = 0; i < children.length; i++){
-				ret += children[i].toString();
-			}
-			return ret;
+	
+	
+	private int countTabs(String str){
+		return str.length() - str.replace("\t", "").length();
+	}
+	
+	private int findNextLine(List<String> list, int line){
+		int i = line;
+		while(true){
+			if(i + 1 >= list.size()) return -1;
+			else if(countTabs(list.get(++i)) <= countTabs(list.get(line))) return i;
 		}
 	}
 }
