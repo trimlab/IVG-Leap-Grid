@@ -7,12 +7,14 @@ import javax.swing.JFrame;
 
 import com.leapmotion.leap.*;
 
+import LeapMouse.LeapMouseListener;
 import Menu.Menu;
 
 public class Main {
 
 	public static void main(String[] args) {
 		//get settings
+		
 		Properties prop = new Properties();
 		InputStream input = null;
 
@@ -45,8 +47,19 @@ public class Main {
 		gui.setResizable(false);
 		
         //create listener and attach
-        LeapListener listener = new LeapListener();
+		Vector max = new Vector(Integer.parseInt(prop.getProperty("max-x")), Integer.parseInt(prop.getProperty("max-y")), Integer.parseInt(prop.getProperty("max-z")));
+		Vector min = new Vector(Integer.parseInt(prop.getProperty("min-x")), Integer.parseInt(prop.getProperty("min-y")), Integer.parseInt(prop.getProperty("min-z")));
+		LeapMouseListener mouse = new LeapMouseListener(max, min);
         Controller controller = new Controller();
-        //controller.addListener(listener);
+        controller.addListener(mouse);
+        
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Remove the sample listener when done
+        controller.removeListener(mouse);
 	}
 }

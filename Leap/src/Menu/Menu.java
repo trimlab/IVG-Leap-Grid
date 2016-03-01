@@ -32,7 +32,6 @@ public class Menu {
 		}
 
 		cursor = processMenuList(list, 0, 0);
-		System.out.println(cursor);
 	}
 	
 	private MenuNode processMenuList(List<String> list, int depth, int line){
