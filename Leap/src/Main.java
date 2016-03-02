@@ -1,8 +1,11 @@
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import com.leapmotion.leap.*;
@@ -41,8 +44,11 @@ public class Main {
 		gui.setTitle(prop.getProperty("window-title"));
 		gui.setSize(Integer.parseInt(prop.getProperty("window-width")), Integer.parseInt(prop.getProperty("window-height")));
 		gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//BufferedImage icon = ImageIO.read(new File("ivg.png"));
-		//gui.setIconImage(icon);
+		BufferedImage icon;
+		try {
+			icon = ImageIO.read(new File("ivg.png"));
+			gui.setIconImage(icon);
+		} catch (Exception e) {}
 		gui.setVisible(true);
 		if(prop.getProperty("start-fullscreen").compareTo("true") == 0) gui.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		

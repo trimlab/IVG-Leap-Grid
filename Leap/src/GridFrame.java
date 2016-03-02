@@ -4,11 +4,13 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.*;
 import Menu.Menu;
+import Menu.MenuNode;
 
 public class GridFrame extends JFrame{
 	
 	private Container container;
 	private JPanel header;
+	private JPanel center;
 	private Menu menu;
 	
 	public GridFrame(Menu menu){
@@ -20,6 +22,12 @@ public class GridFrame extends JFrame{
 		Cursor c = toolkit.createCustomCursor(image , new Point(0, 0), "img");
 		setCursor (c);
 		
+		//setup display
+		header = new JPanel();
+		center = new JPanel();
+		container = getContentPane();
+		container.add(header, BorderLayout.NORTH);
+		container.add(center, BorderLayout.CENTER);
 		refreshDisplay();
 		
 		//container.add(panel, BorderLayout.CENTER);
@@ -28,17 +36,16 @@ public class GridFrame extends JFrame{
 	
 	private void refreshDisplay(){
 		GridLayout layout = new GridLayout(menu.getCursor().getColumns(), menu.getCursor().getRows());
-		container = getContentPane();
-		container.removeAll();
-		container.revalidate();
-		container.repaint();
-		container.setLayout(layout);
+		center.removeAll();
+		center.revalidate();
+		center.repaint();
+		center.setLayout(layout);
 		for(int i = 0; i < menu.getCursor().getNumPanels(); i++){
 			GridPanel newPanel = new GridPanel(menu.getCursor().getChild(i).getName());
 			newPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			newPanel.setBackground(Color.WHITE);
 			newPanel.addMouseListener(new PanelListener());
-			container.add(newPanel);
+			center.add(newPanel);
 		}
 	}
 	
@@ -46,8 +53,11 @@ public class GridFrame extends JFrame{
 		public void mouseClicked(MouseEvent e){
 			GridPanel panel = (GridPanel) e.getSource();
 			System.out.println("clicked " + panel.getName());
-			menu.moveTo(panel.getName());
+			
+			MenuNode node = menu.getCursor().getChild(panel.getName());			
+			menu.moveTo(node.isLeaf() ? "parent" : panel.getName());
 			refreshDisplay();
+			
 		}
 	}
 	

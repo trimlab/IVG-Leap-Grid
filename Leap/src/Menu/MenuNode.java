@@ -35,6 +35,14 @@ public class MenuNode{
 		public MenuNode getChild(int i){
 			return children[i];
 		}
+
+		public MenuNode getChild(String name){
+			for(int i = 0; i < children.length; i++){
+				if(children[i].getName().toLowerCase().compareTo(name.toLowerCase()) == 0) 
+					return children[i];		
+			}
+			return null;
+		}
 		
 		public String getName(){
 			return name;

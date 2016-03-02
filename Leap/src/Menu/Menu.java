@@ -72,6 +72,7 @@ public class Menu {
 			//create and add each child
 			for(int i = 0; countTabs(list.get(line)) == depth + 1; i++){
 				m.setChild(i, processMenuList(list, depth + 1, line));
+				m.getChild(i).setParent(m);
 				line = findNextLine(list, line);
 				if(line < 0) break;
 			}
