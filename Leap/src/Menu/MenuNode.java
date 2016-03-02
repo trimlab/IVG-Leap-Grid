@@ -1,6 +1,6 @@
 package Menu;
 
-class MenuNode{
+public class MenuNode{
 		private MenuNode parent = null;
 		private MenuNode[] children;
 		private String name = "";
@@ -51,6 +51,18 @@ class MenuNode{
 				ret[i] = children[i].getName();			
 			}
 			return ret;
+		}
+		
+		public int getNumPanels(){
+			return cols * rows;
+		}
+		
+		public int getColumns(){
+			return cols;
+		}
+		
+		public int getRows(){
+			return rows;
 		}
 		
 		public String toString(){

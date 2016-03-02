@@ -13,7 +13,6 @@ public class LeapMouseListener extends Listener {
 	private Robot robot;
 	private Vector max;
 	private Vector min;
-	private long lastClick;
 	
 	public LeapMouseListener(Vector max, Vector min){
 		this.max = max;
@@ -21,6 +20,7 @@ public class LeapMouseListener extends Listener {
 	}
 
 	public void onInit(Controller controller){
+		//controller setup
 		controller.enableGesture(Gesture.Type.TYPE_KEY_TAP);
 		controller.config().setFloat("Gesture.ScreenTap.MinForwardVelocity", (float) 30.0);
 		controller.config().setFloat("Gesture.ScreenTap.HistorySeconds", (float) .5);
@@ -56,8 +56,7 @@ public class LeapMouseListener extends Listener {
 					
 					//check for click
 					for(Gesture gesture: frame.gestures()){
-						if(System.currentTimeMillis() - lastClick > 500 && gesture.type() == Type.TYPE_KEY_TAP){
-							lastClick = System.currentTimeMillis();
+						if(gesture.type() == Type.TYPE_KEY_TAP){
 							robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
 							robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 						}

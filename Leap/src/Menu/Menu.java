@@ -34,29 +34,6 @@ public class Menu {
 		cursor = processMenuList(list, 0, 0);
 	}
 	
-	private MenuNode processMenuList(List<String> list, int depth, int line){
-		MenuNode m;
-		//System.out.println("Hit: " + list.get(line).replace("\t", "") + "\n\tLine: " + line + "\n\tDepth:" + depth);
-		
-		//if next line is indented once more
-		if(line + 1 < list.size() && countTabs(list.get(line + 1)) == depth + 1){
-			m = new MenuNode(list.get(line).replace("\t", ""), list.get(line + 1).replace("\t", ""));
-			line += 2; //skip this line and dimensions line
-			
-			//create and add each child
-			for(int i = 0; countTabs(list.get(line)) == depth + 1; i++){
-				m.setChild(i, processMenuList(list, depth + 1, line));
-				line = findNextLine(list, line);
-				if(line < 0) break;
-			}
-		}else{
-			//no children
-			m = new MenuNode(list.get(line).replace("\t", ""));
-		}
-	
-		return m;
-	}
-	
 	public MenuNode getCursor(){
 		return cursor;
 	}
@@ -72,7 +49,7 @@ public class Menu {
 		}else{
 			String[] names = cursor.getChildrenNames();
 			for(int i = 0; i < names.length; i++){
-				if(str.toLowerCase().compareTo(names[i]) == 0){
+				if(str.toLowerCase().compareTo(names[i].toLowerCase()) == 0){
 					cursor = cursor.getChild(i);
 					return true;
 				}
@@ -82,7 +59,29 @@ public class Menu {
 		return false;
 	}
 	
+
+	private MenuNode processMenuList(List<String> list, int depth, int line){
+		MenuNode m;
+		//System.out.println("Hit: " + list.get(line).replace("\t", "") + "\n\tLine: " + line + "\n\tDepth:" + depth);
+		
+		//if next line is indented once more
+		if(line + 1 < list.size() && countTabs(list.get(line + 1)) == depth + 1){
+			m = new MenuNode(list.get(line).replace("\t", "").replace("\"", ""), list.get(line + 1).replace("\t", ""));
+			line += 2; //skip this line and dimensions line
+			
+			//create and add each child
+			for(int i = 0; countTabs(list.get(line)) == depth + 1; i++){
+				m.setChild(i, processMenuList(list, depth + 1, line));
+				line = findNextLine(list, line);
+				if(line < 0) break;
+			}
+		}else{
+			//no children
+			m = new MenuNode(list.get(line).replace("\t", "").replace("\"", ""));
+		}
 	
+		return m;
+	}
 	
 	private int countTabs(String str){
 		return str.length() - str.replace("\t", "").length();
