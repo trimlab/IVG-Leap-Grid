@@ -5,18 +5,26 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
+import java.sql.Timestamp;
 
 import com.leapmotion.leap.*;
 import com.leapmotion.leap.Gesture.Type;
+
+import RecordManager.RecordManager;
+import jxl.write.WritableWorkbook;
 
 public class LeapMouseListener extends Listener {
 	private Robot robot;
 	private Vector max;
 	private Vector min;
-	
-	public LeapMouseListener(Vector max, Vector min){
+	private int recorded;
+	private RecordManager record;
+
+	public LeapMouseListener(Vector max, Vector min, RecordManager record){
 		this.max = max;
 		this.min = min;
+		this.record = record;
+		record.addSheet("testing");
 	}
 
 	public void onInit(Controller controller){
@@ -27,7 +35,7 @@ public class LeapMouseListener extends Listener {
 		controller.config().setFloat("Gesture.ScreenTap.MinDistance", (float) 1.0);
 		controller.config().save();
 		System.out.println("Mouse activated");
-		
+
 		try {
 			robot=new Robot();
 		} catch (AWTException e) {
@@ -42,18 +50,21 @@ public class LeapMouseListener extends Listener {
 	public void onFrame(Controller controller){
 		Frame frame = controller.frame();		//giving device control to frame
 		InteractionBox box = frame.interactionBox();	
-		
+
 		//for moving mouse cursor over frame when right hand is enable and all fingers are not extended
 		for(Hand hand: frame.hands()){
 			if(hand.isRight()){
 				//Vector pos = hand.stabilizedPalmPosition();	
 				Vector pos = hand.palmPosition();		
-				
+
 				Point screenPos = normalize(pos);
 				if(screenPos != null){
+					java.util.Date date= new java.util.Date();
+					record.addRecord("" + new Timestamp(date.getTime()), pos, screenPos);
+
 					//move mouse
 					robot.mouseMove(screenPos.x, screenPos.y);	
-					
+
 					//check for click
 					for(Gesture gesture: frame.gestures()){
 						if(gesture.type() == Type.TYPE_KEY_TAP){
@@ -64,20 +75,20 @@ public class LeapMouseListener extends Listener {
 				}
 			}
 		}
-		
+
 	}
-	
+
 	//normalize a vector to match screen position and check if pos is in config constrains
 	private Point normalize(Vector pos){
 		if( pos.getX() > max.getX() || pos.getX() < min.getX() ||
-			pos.getY() > max.getY() || 
-			pos.getZ() > max.getZ() || pos.getZ() < min.getZ())	return null;
-		
+				pos.getY() > max.getY() || 
+				pos.getZ() > max.getZ() || pos.getZ() < min.getZ())	return null;
+
 		float width = Math.abs(max.getX()) - min.getX();
 		float height = Math.abs(max.getZ()) - min.getZ();
 		double percentX = (pos.getX() - min.getX()) / width;
 		double percentZ = (pos.getZ() - min.getZ())/ height;
-		
+
 		Dimension screen=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 		return new Point((int) (percentX * screen.width), (int) (percentZ * screen.height));
 	}
