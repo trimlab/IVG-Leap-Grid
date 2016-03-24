@@ -22,7 +22,6 @@ public class LeapMouseListener extends Listener {
 		this.max = max;
 		this.min = min;
 		this.record = record;
-		record.addSheet("testing");
 	}
 
 	public void onInit(Controller controller){

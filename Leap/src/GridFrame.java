@@ -59,7 +59,10 @@ public class GridFrame extends JFrame{
 		center.revalidate();
 		center.repaint();
 		center.setLayout(layout);
-		for(int i = 0; i < menu.getCursor().getNumPanels(); i++){
+		int numPanels = menu.getCursor().getNumPanels();
+		for(int i = 0; i < numPanels; i++){
+			int rgb = 255 - i * 100 / numPanels;
+			
 			GridPanel newPanel = new GridPanel(menu.getCursor().getChild(i).getName());
 			newPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			newPanel.setBackground(Color.WHITE);

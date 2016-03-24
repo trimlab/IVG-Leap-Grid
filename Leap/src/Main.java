@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -44,18 +46,21 @@ public class Main {
 				}
 			}
 		}
+		
 		//used to talk to timing thread
 		BlockingQueue<String> queue = new LinkedBlockingQueue<String>();
-
-		//create menu and task manager
-		Menu menu = new Menu(prop.getProperty("menu-file"));
-		TaskManager tasks = new TaskManager(prop.getProperty("task-file"), queue);
-		tasks.start();
+		Lock recordLock = new ReentrantLock();
 		
 		//get file name
-		//String file = JOptionPane.showInputDialog("Enter the file name: ");
-		//RecordManager record = new RecordManager(file);
-		RecordManager record = new RecordManager("file");
+		String file = JOptionPane.showInputDialog("Enter the file name: ");
+		RecordManager record = new RecordManager(file, recordLock);
+		//RecordManager record = new RecordManager("file", recordLock);
+		
+		//create menu and task manager
+		Menu menu = new Menu(prop.getProperty("menu-file"));
+		TaskManager tasks = new TaskManager(prop.getProperty("task-file"), record, recordLock, queue);
+		tasks.start();
+		
 		
 		//create GUI and set settings
 		GridFrame gui = new GridFrame(menu, queue);
