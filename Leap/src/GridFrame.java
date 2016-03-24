@@ -1,10 +1,13 @@
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.*;
 import Menu.Menu;
 import Menu.MenuNode;
+import TaskManager.TaskManager;
 
 public class GridFrame extends JFrame{
 	
@@ -12,9 +15,11 @@ public class GridFrame extends JFrame{
 	private JPanel header;
 	private JPanel center;
 	private Menu menu;
+	private BlockingQueue<String> queue = new LinkedBlockingQueue<String>();
 	
-	public GridFrame(Menu menu){
+	public GridFrame(Menu menu, BlockingQueue<String> queue){
 		this.menu = menu;
+		this.queue = queue;
 		
 		//set graphic info
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -30,7 +35,6 @@ public class GridFrame extends JFrame{
 		//container.add(header, BorderLayout.NORTH);
 		//container.add(center, BorderLayout.CENTER);
 		
-		
 		container.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.BOTH;
@@ -42,10 +46,6 @@ public class GridFrame extends JFrame{
 		gbc.gridy = 1;
 		gbc.ipady = 650;
 		container.add(center, gbc);
-		
-		
-		
-		
 		
 		refreshDisplay();
 		
@@ -71,8 +71,12 @@ public class GridFrame extends JFrame{
 	private class PanelListener extends MouseAdapter{
 		public void mouseClicked(MouseEvent e){
 			GridPanel panel = (GridPanel) e.getSource();
+
+			//send clicked name to task manager
+			queue.offer(panel.getName());
 			
-			MenuNode node = menu.getCursor().getChild(panel.getName());			
+			//get current node and moved to clicked node
+			MenuNode node = menu.getCursor().getChild(panel.getName());
 			menu.moveTo(node.isLeaf() ? "root" : panel.getName());
 			refreshDisplay();
 			

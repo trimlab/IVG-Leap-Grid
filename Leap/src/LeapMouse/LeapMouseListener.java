@@ -11,13 +11,11 @@ import com.leapmotion.leap.*;
 import com.leapmotion.leap.Gesture.Type;
 
 import RecordManager.RecordManager;
-import jxl.write.WritableWorkbook;
 
 public class LeapMouseListener extends Listener {
 	private Robot robot;
 	private Vector max;
 	private Vector min;
-	private int recorded;
 	private RecordManager record;
 
 	public LeapMouseListener(Vector max, Vector min, RecordManager record){
@@ -49,7 +47,6 @@ public class LeapMouseListener extends Listener {
 	//getting gestures performed on frame	
 	public void onFrame(Controller controller){
 		Frame frame = controller.frame();		//giving device control to frame
-		InteractionBox box = frame.interactionBox();	
 
 		//for moving mouse cursor over frame when right hand is enable and all fingers are not extended
 		for(Hand hand: frame.hands()){

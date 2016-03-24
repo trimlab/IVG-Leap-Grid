@@ -45,12 +45,15 @@ public class Menu {
 	}
 	
 	public boolean moveTo(String str){
+		//move to parent
 		if(str.toLowerCase().compareTo("parent") == 0 && cursor.getParent() != null){
 			cursor = cursor.getParent();
 			return true;
+		//move to root
 		}else if(str.toLowerCase().compareTo("root") == 0 && root != null){
 			cursor = root;
 			return true;		
+		//move to child, if child with given name exists
 		}else{
 			String[] names = cursor.getChildrenNames();
 			for(int i = 0; i < names.length; i++){
@@ -67,7 +70,6 @@ public class Menu {
 
 	private MenuNode processMenuList(List<String> list, int depth, int line){
 		MenuNode m;
-		//System.out.println("Hit: " + list.get(line).replace("\t", "") + "\n\tLine: " + line + "\n\tDepth:" + depth);
 		
 		//if next line is indented once more
 		if(line + 1 < list.size() && countTabs(list.get(line + 1)) == depth + 1){
