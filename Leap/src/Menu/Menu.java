@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Menu {
 
+	private MenuNode root;
 	private MenuNode cursor;
 	
 	public Menu(String file){
@@ -31,7 +32,8 @@ public class Menu {
 		    }
 		}
 
-		cursor = processMenuList(list, 0, 0);
+		root = processMenuList(list, 0, 0);
+		cursor = root;
 	}
 	
 	public MenuNode getCursor(){
@@ -46,6 +48,9 @@ public class Menu {
 		if(str.toLowerCase().compareTo("parent") == 0 && cursor.getParent() != null){
 			cursor = cursor.getParent();
 			return true;
+		}else if(str.toLowerCase().compareTo("root") == 0 && root != null){
+			cursor = root;
+			return true;		
 		}else{
 			String[] names = cursor.getChildrenNames();
 			for(int i = 0; i < names.length; i++){

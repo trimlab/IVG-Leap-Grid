@@ -43,8 +43,9 @@ public class Main {
 		}
 
 		Menu menu = new Menu("menu.cfg");
-		String file = JOptionPane.showInputDialog("Enter the file name: ");
-		RecordManager record = new RecordManager(file);
+		//String file = JOptionPane.showInputDialog("Enter the file name: ");
+		//RecordManager record = new RecordManager(file);
+		RecordManager record = new RecordManager("file");
 		
 		GridFrame gui = new GridFrame(menu);
 		gui.setTitle(prop.getProperty("window-title"));

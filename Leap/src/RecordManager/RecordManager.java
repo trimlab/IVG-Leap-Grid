@@ -72,7 +72,7 @@ public class RecordManager {
 			sheet.addCell(new Label(4, sheetRow, "" + p.x));
 			sheet.addCell(new Label(5, sheetRow, "" + p.y));
 			
-			if(sheetRow > 5000){
+			if(sheetRow > 200){
 				workbook.write();
 				workbook.close();
 				System.exit(0);

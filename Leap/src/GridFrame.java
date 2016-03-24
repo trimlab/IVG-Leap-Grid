@@ -24,10 +24,29 @@ public class GridFrame extends JFrame{
 		
 		//setup display
 		header = new JPanel();
+		header.setBackground(new Color(127, 235, 255));
 		center = new JPanel();
 		container = getContentPane();
-		container.add(header, BorderLayout.NORTH);
-		container.add(center, BorderLayout.CENTER);
+		//container.add(header, BorderLayout.NORTH);
+		//container.add(center, BorderLayout.CENTER);
+		
+		
+		container.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		container.add(header, gbc);
+		gbc.gridy = 1;
+		gbc.ipady = 650;
+		container.add(center, gbc);
+		
+		
+		
+		
+		
 		refreshDisplay();
 		
 		//container.add(panel, BorderLayout.CENTER);
@@ -52,10 +71,9 @@ public class GridFrame extends JFrame{
 	private class PanelListener extends MouseAdapter{
 		public void mouseClicked(MouseEvent e){
 			GridPanel panel = (GridPanel) e.getSource();
-			System.out.println("clicked " + panel.getName());
 			
 			MenuNode node = menu.getCursor().getChild(panel.getName());			
-			menu.moveTo(node.isLeaf() ? "parent" : panel.getName());
+			menu.moveTo(node.isLeaf() ? "root" : panel.getName());
 			refreshDisplay();
 			
 		}
