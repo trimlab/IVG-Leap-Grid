@@ -14,7 +14,7 @@ public class FreeTTS {
 		Voice voice;
 		VoiceManager voiceManager = VoiceManager.getInstance();
 		voice = voiceManager.getVoice(VOICENAME_kevin);
-		voice.setRate(100);
+		voice.setRate(130);
 		voice.setPitchShift((float) 1.2);
 		voice.allocate();
 		voice.speak(text);

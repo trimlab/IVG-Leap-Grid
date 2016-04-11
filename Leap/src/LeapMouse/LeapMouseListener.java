@@ -18,10 +18,13 @@ public class LeapMouseListener extends Listener {
 	private Vector min;
 	private RecordManager record;
 
-	public LeapMouseListener(Vector max, Vector min, RecordManager record){
+	public LeapMouseListener(Vector max, Vector min){
 		this.max = max;
 		this.min = min;
-		this.record = record;
+	}
+	
+	public void setRecordManager(RecordManager rm){
+		record = rm;
 	}
 
 	public void onInit(Controller controller){

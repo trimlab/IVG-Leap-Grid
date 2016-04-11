@@ -26,7 +26,7 @@ public class RecordManager {
 		this.name = name;
 		this.recordLock = recordLock;
 		try {
-			workbook = Workbook.createWorkbook(new File(name + ".xls"));
+			workbook = Workbook.createWorkbook(new File("output/" + name + ".xls"));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
