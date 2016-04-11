@@ -37,7 +37,7 @@ public class RecordManager {
 	public void addSheet(String sheetName){
 		recordLock.lock();
 		try{
-			sheet = workbook.createSheet(sheetName, workbook.getSheets().length - 1);
+			sheet = workbook.createSheet(sheetName, 0);//workbook.getSheets().length - 1);
 			sheetRow = 2;
 			
 		    WritableCellFormat header = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 11, WritableFont.BOLD, false, UnderlineStyle.SINGLE));
@@ -59,6 +59,7 @@ public class RecordManager {
 		    sheet.setColumnView(3, 15);
 		    sheet.setColumnView(4, 15);
 		    sheet.setColumnView(5, 15);
+		    sheet.setColumnView(6, 15);
 		    
 		    sheet.addCell(new Label(0, 1, "Timestamp", header));
 		    sheet.addCell(new Label(1, 1, "Leap X", header));
@@ -66,9 +67,10 @@ public class RecordManager {
 		    sheet.addCell(new Label(3, 1, "Leap Z", header));
 		    sheet.addCell(new Label(4, 1, "Screen X", header));
 		    sheet.addCell(new Label(5, 1, "Screen Y", header));
+		    sheet.addCell(new Label(6, 1, "Clicks", header));
 		    sheet.addCell(new Label(8, 8, "Start:", header));
-		    sheet.addCell(new Label(9, 8, "=A3"));
 		    sheet.addCell(new Label(8, 9, "End:", header));
+		    sheet.addCell(new Label(8, 11, "Clicks:", header));
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -95,10 +97,19 @@ public class RecordManager {
 		//System.out.println(sheetRow);
 	}
 	
+	public void addClick(String panelName){
+		try {
+			sheet.addCell(new Label(6, sheetRow - 1, panelName));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	//write final before closing
 	public void finalWrite(){
 		recordLock.lock();
 		try {
+			enabled(false);
 			workbook.write();
 			workbook.close();
 		} catch (Exception e) {
@@ -112,8 +123,11 @@ public class RecordManager {
 		recordLock.lock();
 	    try {
 	    	//if disabling, write to stop time
-			if(sheet != null && !b)
-				sheet.addCell(new Label(9, 9, "=A" + sheetRow));
+			if(sheet != null && !b){
+			    sheet.addCell(new Formula(9, 8, "A3"));
+				sheet.addCell(new Formula(9, 9, "A" + sheetRow));
+				sheet.addCell(new Formula(9, 11, "COUNTA(G3:G" + sheetRow));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

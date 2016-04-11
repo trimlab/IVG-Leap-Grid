@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import javax.swing.*;
 import Menu.Menu;
 import Menu.MenuNode;
+import RecordManager.RecordManager;
 import TaskManager.TaskManager;
 
 public class GridFrame extends JFrame{
@@ -16,10 +17,12 @@ public class GridFrame extends JFrame{
 	private JPanel center;
 	private Menu menu;
 	private BlockingQueue<String> queue = new LinkedBlockingQueue<String>();
+	private RecordManager record;
 	
-	public GridFrame(Menu menu, BlockingQueue<String> queue){
+	public GridFrame(Menu menu, BlockingQueue<String> queue, RecordManager record){
 		this.menu = menu;
 		this.queue = queue;
+		this.record = record;
 		
 		//set graphic info
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -77,6 +80,9 @@ public class GridFrame extends JFrame{
 
 			//send clicked name to task manager
 			queue.offer(panel.getName());
+			
+			//send clicked name to record manager
+			record.addClick(panel.getName());
 			
 			//get current node and moved to clicked node
 			MenuNode node = menu.getCursor().getChild(panel.getName());

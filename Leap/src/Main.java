@@ -90,7 +90,7 @@ public class Main {
 
 
 		//create GUI and set settings
-		GridFrame gui = new GridFrame(menu, queue);
+		GridFrame gui = new GridFrame(menu, queue, record);
 		gui.setTitle(prop.getProperty("window-title"));
 		gui.setSize(Integer.parseInt(prop.getProperty("window-width")), Integer.parseInt(prop.getProperty("window-height")));
 

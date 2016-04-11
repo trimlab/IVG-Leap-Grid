@@ -57,7 +57,6 @@ public class TaskManager extends Thread {
 			try {
 				record.enabled(false);
 				int sleep = Integer.parseInt(tasks[task].replaceAll("[^0-9]","")) * 1000;
-				System.out.println("Sleeping for " + sleep + "ms");
 				Thread.sleep(sleep);
 				nextTask();
 			} catch (Exception e) {
