@@ -13,9 +13,11 @@ import java.util.concurrent.locks.Lock;
 import com.leapmotion.leap.Vector;
 
 import RecordManager.RecordManager;
+import TTS.TTS;
 
 public class TaskManager extends Thread {
 	private volatile boolean running = true;
+	private TTS voice;
 	private BlockingQueue<String> queue;
 	private RecordManager record;
 	private Lock recordLock;
@@ -26,6 +28,8 @@ public class TaskManager extends Thread {
 		this.queue = queue;
 		this.record = record;
 		this.recordLock = recordLock;
+		
+		this.voice = new TTS();
 		
 		//read each line of file into tasks
 		Scanner sc = null;
@@ -63,7 +67,9 @@ public class TaskManager extends Thread {
 				e.printStackTrace();
 			}
 		}else{
-			//SPEAK HERE
+			//say the task
+			voice.say("Find the square entitled " + tasks[task]);
+			
 			record.addSheet(tasks[task]);
 			record.enabled(true);
 

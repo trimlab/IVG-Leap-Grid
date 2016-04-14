@@ -1,14 +1,20 @@
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 import Menu.Menu;
 import Menu.MenuNode;
 import RecordManager.RecordManager;
-import TaskManager.TaskManager;
+import TTS.TTS;
 
 public class GridFrame extends JFrame{
 	
@@ -18,11 +24,14 @@ public class GridFrame extends JFrame{
 	private Menu menu;
 	private BlockingQueue<String> queue = new LinkedBlockingQueue<String>();
 	private RecordManager record;
+	private TTS voice;
 	
 	public GridFrame(Menu menu, BlockingQueue<String> queue, RecordManager record){
 		this.menu = menu;
 		this.queue = queue;
 		this.record = record;
+		
+		this.voice = new TTS();
 		
 		//set graphic info
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -75,6 +84,8 @@ public class GridFrame extends JFrame{
 	}
 	
 	private class PanelListener extends MouseAdapter{
+		private Timer t;
+
 		public void mouseClicked(MouseEvent e){
 			GridPanel panel = (GridPanel) e.getSource();
 
@@ -89,6 +100,23 @@ public class GridFrame extends JFrame{
 			menu.moveTo(node.isLeaf() ? "root" : panel.getName());
 			refreshDisplay();
 			
+		}
+		public void mouseEntered(MouseEvent e){
+			GridPanel panel = (GridPanel) e.getSource();
+			t = new Timer(true);
+			t.schedule(new TimerTask(){
+				public void run(){
+					sayName(panel.getName());
+				}
+			}, 500);
+		}
+		
+		public void mouseExited(MouseEvent e){
+			t.cancel();
+		}
+		
+		private void sayName(String str){
+			voice.say(str);
 		}
 	}
 	
