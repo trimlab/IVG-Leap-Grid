@@ -25,11 +25,13 @@ public class GridFrame extends JFrame{
 	private BlockingQueue<String> queue = new LinkedBlockingQueue<String>();
 	private RecordManager record;
 	private TTS voice;
+	private boolean speak;
 	
-	public GridFrame(Menu menu, BlockingQueue<String> queue, RecordManager record){
+	public GridFrame(Menu menu, BlockingQueue<String> queue, RecordManager record, boolean speak){
 		this.menu = menu;
 		this.queue = queue;
 		this.record = record;
+		this.speak = speak;
 		
 		this.voice = new TTS();
 		
@@ -106,7 +108,7 @@ public class GridFrame extends JFrame{
 			t = new Timer(true);
 			t.schedule(new TimerTask(){
 				public void run(){
-					sayName(panel.getName());
+					if(speak) sayName(panel.getName());
 				}
 			}, 500);
 		}

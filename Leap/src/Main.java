@@ -23,6 +23,20 @@ import Menu.Menu;
 import RecordManager.RecordManager;
 import TaskManager.TaskManager;
 
+
+/*
+ * TODO
+ * Audio in config files - help us to figure out how to change target names (raspberry, etc.) and prompt cues (select option, "rasberry")
+ * Home gesture - gesture that takes user home from anywhere in the menu
+ * Back gesture - takes users back to previous menu page from anywhere
+ * Readme file - make a readme file to give instructions on how to use config files to set up experiment
+ * OSC messages - send out data (all the data in the excel) through osc messages
+ * Spacing between squares - not a big priority right now
+ * Lists - not a big priority right now
+ * 
+ */
+
+
 public class Main {
 
 	public static void main(String[] args) {
@@ -44,7 +58,7 @@ public class Main {
 				break;
 			}
 		}
-		
+
 		//make directory for test
 		try{
 	        dir.mkdir();
@@ -85,12 +99,14 @@ public class Main {
 
 		//create menu and task manager
 		Menu menu = new Menu("menus/" + block.getProperty("menu"));
+		
 		TaskManager tasks = new TaskManager("tasks/" + block.getProperty("task"), record, recordLock, queue);
 		tasks.start();
 
 
 		//create GUI and set settings
-		GridFrame gui = new GridFrame(menu, queue, record);
+		boolean speak = (block.getProperty("use-speech").compareTo("true") == 0 ? true : false);
+		GridFrame gui = new GridFrame(menu, queue, record, speak);
 		gui.setTitle(prop.getProperty("window-title"));
 		gui.setSize(Integer.parseInt(prop.getProperty("window-width")), Integer.parseInt(prop.getProperty("window-height")));
 
