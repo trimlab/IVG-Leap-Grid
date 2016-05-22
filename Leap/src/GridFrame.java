@@ -1,12 +1,19 @@
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -27,12 +34,15 @@ public class GridFrame extends JFrame{
 	private TTS voice;
 	private boolean speak;
 	private int speakDelay;
+	private boolean speakWav;
 	
-	public GridFrame(Menu menu, BlockingQueue<String> queue, RecordManager record, boolean speak, int speakDelay){
+	public GridFrame(Menu menu, BlockingQueue<String> queue, RecordManager record, boolean speak, int speakDelay, boolean speakWav){
 		this.menu = menu;
 		this.queue = queue;
 		this.record = record;
 		this.speak = speak;
+		this.speakDelay = speakDelay;
+		this.speakWav = speakWav;
 		
 		this.voice = new TTS();
 		
@@ -119,7 +129,19 @@ public class GridFrame extends JFrame{
 		}
 		
 		private void sayName(String str){
-			voice.say(str);
+			File f = new File("sounds/" + str + ".wav");
+			if(speakWav && f.exists() && !f.isDirectory()) { 
+		        try {
+					Clip clip = AudioSystem.getClip();
+					clip.open(AudioSystem.getAudioInputStream(f));
+			        clip.start();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}else{
+				voice.say(str);
+			}
 		}
 	}
 	

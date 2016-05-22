@@ -26,7 +26,6 @@ import TaskManager.TaskManager;
 
 /*
  * TODO
- * Audio in config files - help us to figure out how to change target names (raspberry, etc.) and prompt cues (select option, "rasberry")
  * Home gesture - gesture that takes user home from anywhere in the menu
  * Back gesture - takes users back to previous menu page from anywhere
  * Readme file - make a readme file to give instructions on how to use config files to set up experiment
@@ -107,7 +106,8 @@ public class Main {
 		//create GUI and set settings
 		boolean speak = (block.getProperty("use-speech").compareTo("true") == 0 ? true : false);
 		int speakDelay = Integer.parseInt(prop.getProperty("delay"));
-		GridFrame gui = new GridFrame(menu, queue, record, speak, speakDelay);
+		boolean speakWav = (block.getProperty("use-speech-files").compareTo("true") == 0 ? true : false);
+		GridFrame gui = new GridFrame(menu, queue, record, speak, speakDelay, speakWav);
 		gui.setTitle(prop.getProperty("window-title"));
 		gui.setSize(Integer.parseInt(prop.getProperty("window-width")), Integer.parseInt(prop.getProperty("window-height")));
 
