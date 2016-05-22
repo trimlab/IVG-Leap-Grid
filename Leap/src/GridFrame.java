@@ -26,8 +26,9 @@ public class GridFrame extends JFrame{
 	private RecordManager record;
 	private TTS voice;
 	private boolean speak;
+	private int speakDelay;
 	
-	public GridFrame(Menu menu, BlockingQueue<String> queue, RecordManager record, boolean speak){
+	public GridFrame(Menu menu, BlockingQueue<String> queue, RecordManager record, boolean speak, int speakDelay){
 		this.menu = menu;
 		this.queue = queue;
 		this.record = record;
@@ -110,7 +111,7 @@ public class GridFrame extends JFrame{
 				public void run(){
 					if(speak) sayName(panel.getName());
 				}
-			}, 500);
+			}, speakDelay);
 		}
 		
 		public void mouseExited(MouseEvent e){
