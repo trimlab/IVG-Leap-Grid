@@ -98,6 +98,7 @@ public class RecordManager {
 	}
 	
 	public void addClick(String panelName){
+		if(sheet == null) return;
 		try {
 			sheet.addCell(new Label(6, sheetRow - 1, panelName));
 		} catch (Exception e) {

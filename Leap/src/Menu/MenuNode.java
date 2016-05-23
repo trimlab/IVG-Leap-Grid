@@ -49,7 +49,7 @@ public class MenuNode{
 		}
 		
 		public boolean isLeaf(){
-			if(children == null) return true;
+			if(cols == 0 || rows == 0) return true;
 			else return false;
 		}
 		
@@ -81,6 +81,16 @@ public class MenuNode{
 				for(int i = 0; i < children.length; i++){
 					ret += children[i].toString();
 				}
+			}
+			else ret += "\nNo Children\n\n";
+			return ret;
+		}
+		
+		public String toStringImmediate(){
+			String ret = name;
+			ret += "\nDimensions: " + cols + "x" + rows + "\n";
+			if(children != null){
+				ret += "\nChildren: " + String.join(", ", getChildrenNames());
 			}
 			else ret += "\nNo Children\n\n";
 			return ret;

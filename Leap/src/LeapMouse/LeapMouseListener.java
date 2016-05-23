@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import com.leapmotion.leap.*;
 import com.leapmotion.leap.Gesture.Type;
 
+import Grid.GridFrame;
 import RecordManager.RecordManager;
 
 public class LeapMouseListener extends Listener {
@@ -17,14 +18,21 @@ public class LeapMouseListener extends Listener {
 	private Vector max;
 	private Vector min;
 	private RecordManager record;
+	private GridFrame grid;
+	private long lastEventTime;
 
 	public LeapMouseListener(Vector max, Vector min){
 		this.max = max;
 		this.min = min;
+		lastEventTime = System.nanoTime();
 	}
-	
-	public void setRecordManager(RecordManager rm){
-		record = rm;
+
+	public void setRecordManager(RecordManager record){
+		this.record = record;
+	}
+
+	public void setGridFrame(GridFrame grid){
+		this.grid = grid;
 	}
 
 	public void onInit(Controller controller){
@@ -32,7 +40,11 @@ public class LeapMouseListener extends Listener {
 		controller.enableGesture(Gesture.Type.TYPE_KEY_TAP);
 		controller.config().setFloat("Gesture.ScreenTap.MinForwardVelocity", (float) 30.0);
 		controller.config().setFloat("Gesture.ScreenTap.HistorySeconds", (float) .5);
-		controller.config().setFloat("Gesture.ScreenTap.MinDistance", (float) 1.0);
+		controller.config().setFloat("Gesture.ScreenTap.MinDistance", (float) 0.5);
+
+		controller.enableGesture(Gesture.Type.TYPE_CIRCLE);
+		controller.config().setFloat("Gesture.Circle.MinRadius", (float) 10.0);
+		controller.config().setFloat("Gesture.Circle.MinArc", (float) .5);
 		controller.config().save();
 		System.out.println("Mouse activated");
 
@@ -64,9 +76,41 @@ public class LeapMouseListener extends Listener {
 					//move mouse
 					robot.mouseMove(screenPos.x, screenPos.y);	
 
-					//check for click
+					int numCircles = 0;
 					for(Gesture gesture: frame.gestures()){
-						if(gesture.type() == Type.TYPE_KEY_TAP){
+						if(gesture.type() == Type.TYPE_CIRCLE){
+							numCircles++;
+						}
+					}
+
+					//check for gestures
+					boolean checkedCircles = false;
+					for(Gesture gesture: frame.gestures()){
+						if(gesture.type() == Type.TYPE_CIRCLE){
+							CircleGesture circle = new CircleGesture(gesture);
+							boolean clockwise = false;
+
+							if (circle.pointable().direction().angleTo(circle.normal()) <= Math.PI / 2) {
+								clockwise = true;
+							}
+
+							if(circle.progress() > 2 && !clockwise && !checkedCircles){
+								if(numCircles == 1){
+									//check if 1 second has passed since last back or home
+									if((System.nanoTime() - lastEventTime) / 1000000 > 1000){
+										grid.changePanel("Back");
+										lastEventTime = System.nanoTime();
+									}
+								}else if(numCircles > 1){
+									//check if 1 second has passed since last back or home
+									if((System.nanoTime() - lastEventTime) / 1000000 > 1000){
+										checkedCircles = true;
+										grid.changePanel("Home");
+										lastEventTime = System.nanoTime();
+									}
+								}
+							}
+						}else if(gesture.type() == Type.TYPE_KEY_TAP){
 							robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
 							robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 						}
@@ -88,7 +132,7 @@ public class LeapMouseListener extends Listener {
 		double percentX = (pos.getX() - min.getX()) / width;
 		double percentZ = (pos.getZ() - min.getZ())/ height;
 
-		Dimension screen=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension screen = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 		return new Point((int) (percentX * screen.width), (int) (percentZ * screen.height));
 	}
 }
