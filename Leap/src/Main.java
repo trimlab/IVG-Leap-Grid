@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -36,6 +37,7 @@ import TaskManager.TaskManager;
 
 
 public class Main {
+	private static ArrayList<String> usedBlocks = new ArrayList<String>();
 
 	public static void main(String[] args) {
 		//get settings
@@ -59,11 +61,11 @@ public class Main {
 
 		//make directory for test
 		try{
-	        dir.mkdir();
-	    } 
-	    catch(Exception e){
+			dir.mkdir();
+		} 
+		catch(Exception e){
 			e.printStackTrace();
-	    } 
+		} 
 
 		//get box coordinate settings
 		Vector max = new Vector(Integer.parseInt(prop.getProperty("max-x")), Integer.parseInt(prop.getProperty("max-y")), Integer.parseInt(prop.getProperty("max-z")));
@@ -81,7 +83,7 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		// Remove the sample listener when done
 		controller.removeListener(mouse);
 	}
@@ -90,14 +92,15 @@ public class Main {
 	private static void init(Properties prop, String testName, LeapMouseListener mouse, Lock recordLock, BlockingQueue<String> queue){
 		//get selected block
 		String blockName = getBlock();
+		usedBlocks.add(blockName);
 		Properties block = getProperties("blocks/" + blockName);
-		
+
 		RecordManager record = new RecordManager(testName + "/" + blockName.replace(".cfg", ""), recordLock);
 		mouse.setRecordManager(record);
 
 		//create menu and task manager
 		Menu menu = new Menu("menus/" + block.getProperty("menu"));
-		
+
 		TaskManager tasks = new TaskManager("tasks/" + block.getProperty("task"), record, recordLock, queue);
 		tasks.start();
 
@@ -106,7 +109,7 @@ public class Main {
 		GridFrame gui = new GridFrame(menu, queue, record, prop, block);
 		gui.setTitle(prop.getProperty("window-title"));
 		gui.setSize(Integer.parseInt(prop.getProperty("window-width")), Integer.parseInt(prop.getProperty("window-height")));
-		
+
 		//set grid on mouse to allow changing from leap
 		mouse.setGridFrame(gui);
 
@@ -149,38 +152,48 @@ public class Main {
 	private static String getBlock(){
 		File folder = new File("blocks/");
 		File[] files = folder.listFiles();
-		String[] options = new String[files.length];
+		ArrayList<String> options = new ArrayList<String>();
+		ArrayList<String> optionFiles = new ArrayList<String>();
 
+		System.out.println("used: " + usedBlocks.toString());
+		
 		for (int i = 0; i < files.length; i++) {
-			if (files[i].isFile()) {
-				//System.out.println("File " + files[i].getName());
+			System.out.println(files[i] + ": " + usedBlocks.contains(files[i].getName()));
+			if (files[i].isFile() && !usedBlocks.contains(files[i].getName())) {
+				//block was not already used
+				//if(){
 
-				Properties prop = new Properties();
-				InputStream input = null;
+					Properties prop = new Properties();
+					InputStream input = null;
 
-				try {
-					input = new FileInputStream(folder + "/" + files[i].getName());
-					prop.load(input);
-					options[i] = prop.getProperty("name");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+					try {
+						input = new FileInputStream(folder + "/" + files[i].getName());
+						prop.load(input);
+						options.add(prop.getProperty("name"));
+						optionFiles.add(files[i].getName());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				//}
 			}
 		}
-
+		
+		//all blocks used
+		if(options.size() == 0) System.exit(0);
+		
 		int n = JOptionPane.showOptionDialog(null,
 				"Please select which block you would like to use.",
 				"Block Selection",
 				JOptionPane.YES_NO_CANCEL_OPTION,
 				JOptionPane.DEFAULT_OPTION,
 				null,
-				options,
-				options[0]);  
+				options.toArray(),
+				options.get(0));  
 
 		//if closed, exit
 		if(n == -1) System.exit(0);
 
-		return files[n].getName();
+		return optionFiles.get(n);
 	}
 
 }
