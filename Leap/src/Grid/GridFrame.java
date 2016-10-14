@@ -22,9 +22,10 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import Manager.BlockControl;
+import Manager.RecordManager;
 import Menu.Menu;
 import Menu.MenuNode;
-import RecordManager.RecordManager;
 import TTS.TTS;
 
 public class GridFrame extends JFrame{
@@ -38,21 +39,22 @@ public class GridFrame extends JFrame{
 	private RecordManager record;
 	private TTS voice;
 	private boolean speak;
+	private boolean speakOverlap;
 	private int speakDelay;
 	private boolean speakWav;
 	private boolean leafReturnToRoot;
 
-	public GridFrame(Menu menu, BlockingQueue<String> queue, RecordManager record, Properties prop, Properties block){
+	public GridFrame(Menu menu, BlockControl blockControl){
 		this.menu = menu;
-		this.queue = queue;
-		this.record = record;
+		this.queue = blockControl.getTaskQueue();
+		this.record = blockControl.getRecordManager();
+		this.voice = blockControl.getVoice();
 		
-		this.speak = (block.getProperty("use-speech").compareTo("true") == 0 ? true : false);
-		this.speakDelay = Integer.parseInt(prop.getProperty("delay"));
-		this.speakWav = (block.getProperty("use-speech-files").compareTo("true") == 0 ? true : false);
-		this.leafReturnToRoot = (block.getProperty("return-home-on-leaf").compareTo("true") == 0 ? true : false);
-
-		this.voice = new TTS();
+		this.speak = (blockControl.getBlockSettings().getProperty("use-speech").compareTo("true") == 0 ? true : false);
+		this.speakOverlap = (blockControl.getGlobalSettings().getProperty("allow-overlap").compareTo("true") == 0 ? true : false);
+		this.speakDelay = Integer.parseInt(blockControl.getGlobalSettings().getProperty("delay"));
+		this.speakWav = (blockControl.getBlockSettings().getProperty("use-speech-files").compareTo("true") == 0 ? true : false);
+		this.leafReturnToRoot = (blockControl.getBlockSettings().getProperty("return-home-on-leaf").compareTo("true") == 0 ? true : false);
 
 		//set graphic info
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -75,7 +77,7 @@ public class GridFrame extends JFrame{
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		
-		if(block.getProperty("show-header").compareTo("true") == 0){
+		if(blockControl.getBlockSettings().getProperty("show-header").compareTo("true") == 0){
 			back = new GridPanel("Back", false);
 			back.setBackground(new Color(127, 235, 255));
 			back.addMouseListener(new PanelListener());
@@ -160,13 +162,19 @@ public class GridFrame extends JFrame{
 
 		}
 		public void mouseEntered(MouseEvent e){
-			GridPanel panel = (GridPanel) e.getSource();
-			t = new Timer(true);
-			t.schedule(new TimerTask(){
-				public void run(){
-					if(speak) sayName(panel.getName());
+			if(speak){
+				GridPanel panel = (GridPanel) e.getSource();
+				if(speakDelay == 0){
+					sayName(panel.getName());
+				}else{
+					t = new Timer(true);
+					t.schedule(new TimerTask(){
+						public void run(){
+							sayName(panel.getName());
+						}
+					}, speakDelay);
 				}
-			}, speakDelay);
+			}
 		}
 
 		public void mouseExited(MouseEvent e){
@@ -185,7 +193,7 @@ public class GridFrame extends JFrame{
 					e.printStackTrace();
 				}
 			}else{
-				voice.say(str);
+				voice.say(str, speakOverlap);
 			}
 		}
 	}

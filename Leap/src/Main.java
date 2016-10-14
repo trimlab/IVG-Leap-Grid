@@ -21,9 +21,11 @@ import com.leapmotion.leap.*;
 
 import Grid.GridFrame;
 import LeapMouse.LeapMouseListener;
+import Manager.BlockControl;
+import Manager.RecordManager;
+import Manager.TaskManager;
 import Menu.Menu;
-import RecordManager.RecordManager;
-import TaskManager.TaskManager;
+import TTS.TTS;
 
 
 /*
@@ -41,23 +43,29 @@ public class Main {
 
 	public static void main(String[] args) {
 		//get settings
+		BlockControl blockControl = new BlockControl();
 
 		Properties prop = getProperties("app.cfg");
+		blockControl.setGlobalSettings(prop);
 
 		//used to talk to timing thread
 		BlockingQueue<String> queue = new LinkedBlockingQueue<String>();
+		blockControl.setTaskQueue(queue);
 		Lock recordLock = new ReentrantLock();
+		blockControl.setRecordLock(recordLock);
 
 		//get test name
 		String testName;
 		File dir;
 		while(true){
 			testName = JOptionPane.showInputDialog("Enter the file name: ").replaceAll("[^A-Za-z0-9-]", "");
+			
 			dir = new File("output/" + testName);
 			if(testName != "" && !dir.exists()){
 				break;
 			}
 		}
+		blockControl.setTestName(testName);
 
 		//make directory for test
 		try{
@@ -72,11 +80,15 @@ public class Main {
 		Vector min = new Vector(Integer.parseInt(prop.getProperty("min-x")), Integer.parseInt(prop.getProperty("min-y")), Integer.parseInt(prop.getProperty("min-z")));
 
 		//create listener and attach
-		LeapMouseListener mouse = new LeapMouseListener(max, min);
+		LeapMouseListener leapListener = new LeapMouseListener(max, min);
+		blockControl.setLeapListener(leapListener);
 		Controller controller = new Controller();
-		controller.addListener(mouse);
+		controller.addListener(leapListener);
+		
+		//create TTS and attach
+		blockControl.setVoice(new TTS());
 
-		init(prop, testName, mouse, recordLock, queue);
+		init(blockControl);
 
 		try {
 			System.in.read();
@@ -85,43 +97,46 @@ public class Main {
 		}
 
 		// Remove the sample listener when done
-		controller.removeListener(mouse);
+		controller.removeListener(leapListener);
 	}
 
 	//start block selection, open menu, and start recording/task management
-	private static void init(Properties prop, String testName, LeapMouseListener mouse, Lock recordLock, BlockingQueue<String> queue){
+	private static void init(BlockControl blockControl){
 		//get selected block
 		String blockName = getBlock();
+		blockControl.setBlockName(blockName);
 		usedBlocks.add(blockName);
 		Properties block = getProperties("blocks/" + blockName);
+		blockControl.setBlockSettings(block);
 
-		RecordManager record = new RecordManager(testName + "/" + blockName.replace(".cfg", ""), recordLock);
-		mouse.setRecordManager(record);
+		RecordManager record = new RecordManager(blockControl.getTestName() + "/" + blockName.replace(".cfg", ""), blockControl.getRecordLock());
+		blockControl.getLeapListener().setRecordManager(record);
+		blockControl.setRecordManager(record);
 
 		//create menu and task manager
 		Menu menu = new Menu("menus/" + block.getProperty("menu"));
 
-		TaskManager tasks = new TaskManager("tasks/" + block.getProperty("task"), record, recordLock, queue);
+		TaskManager tasks = new TaskManager(blockControl);
 		tasks.start();
 
 
 		//create GUI and set settings
-		GridFrame gui = new GridFrame(menu, queue, record, prop, block);
-		gui.setTitle(prop.getProperty("window-title"));
-		gui.setSize(Integer.parseInt(prop.getProperty("window-width")), Integer.parseInt(prop.getProperty("window-height")));
+		GridFrame gui = new GridFrame(menu, blockControl);
+		gui.setTitle(blockControl.getGlobalSettings().getProperty("window-title"));
+		gui.setSize(Integer.parseInt(blockControl.getGlobalSettings().getProperty("window-width")), Integer.parseInt(blockControl.getGlobalSettings().getProperty("window-height")));
 
 		//set grid on mouse to allow changing from leap
-		mouse.setGridFrame(gui);
+		blockControl.getLeapListener().setGridFrame(gui);
 
 		WindowListener exitListener = new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				init(prop, testName, mouse, recordLock, queue);
+				init(blockControl);
 			}
 		};
+		
 		gui.addWindowListener(exitListener);
-		System.out.println("show gui");
 		gui.setVisible(true);
-		if(prop.getProperty("start-fullscreen").compareTo("true") == 0) gui.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		if(blockControl.getGlobalSettings().getProperty("start-fullscreen").compareTo("true") == 0) gui.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 
 		//create GUI icon
 		BufferedImage icon;
@@ -155,10 +170,10 @@ public class Main {
 		ArrayList<String> options = new ArrayList<String>();
 		ArrayList<String> optionFiles = new ArrayList<String>();
 
-		System.out.println("used: " + usedBlocks.toString());
+		//System.out.println("used: " + usedBlocks.toString());
 		
 		for (int i = 0; i < files.length; i++) {
-			System.out.println(files[i] + ": " + usedBlocks.contains(files[i].getName()));
+			//System.out.println(files[i] + ": " + usedBlocks.contains(files[i].getName()));
 			if (files[i].isFile() && !usedBlocks.contains(files[i].getName())) {
 				//block was not already used
 				//if(){

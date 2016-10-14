@@ -11,7 +11,7 @@ import com.leapmotion.leap.*;
 import com.leapmotion.leap.Gesture.Type;
 
 import Grid.GridFrame;
-import RecordManager.RecordManager;
+import Manager.RecordManager;
 
 public class LeapMouseListener extends Listener {
 	private Robot robot;

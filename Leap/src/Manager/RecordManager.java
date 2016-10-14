@@ -1,4 +1,4 @@
-package RecordManager;
+package Manager;
 
 import java.awt.Point;
 import java.io.File;

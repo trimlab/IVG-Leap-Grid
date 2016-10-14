@@ -1,4 +1,4 @@
-package TaskManager;
+package Manager;
 
 import java.awt.Point;
 import java.io.File;
@@ -6,13 +6,13 @@ import java.io.FileNotFoundException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.Lock;
 
 import com.leapmotion.leap.Vector;
 
-import RecordManager.RecordManager;
 import TTS.TTS;
 
 public class TaskManager extends Thread {
@@ -20,20 +20,20 @@ public class TaskManager extends Thread {
 	private TTS voice;
 	private BlockingQueue<String> queue;
 	private RecordManager record;
-	private Lock recordLock;
 	private String[] tasks;
+	private Properties prop;
 	private int task = -1;
 	
-	public TaskManager(String file, RecordManager record, Lock recordLock, BlockingQueue<String> queue){
-		this.queue = queue;
-		this.record = record;
-		this.recordLock = recordLock;
-		
-		this.voice = new TTS();
+	public TaskManager(BlockControl blockControl){
+		this.queue = blockControl.getTaskQueue();
+		this.record = blockControl.getRecordManager();
+		this.prop = blockControl.getGlobalSettings();
+		this.voice = blockControl.getVoice();
 		
 		//read each line of file into tasks
 		Scanner sc = null;
 		try {
+			String file = "tasks/" + blockControl.getBlockSettings().getProperty("task");
 			sc = new Scanner(new File(file));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -68,7 +68,7 @@ public class TaskManager extends Thread {
 			}
 		}else{
 			//say the task
-			voice.say("Find the square entitled " + tasks[task]);
+			voice.say(prop.getProperty("task-prefix") + " " + tasks[task] + " " + prop.getProperty("task-suffix"), prop.getProperty("allow-overlap").compareTo("true") == 0 ? true : false);
 			
 			record.addSheet(tasks[task]);
 			record.enabled(true);
