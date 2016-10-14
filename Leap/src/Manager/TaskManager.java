@@ -68,8 +68,9 @@ public class TaskManager extends Thread {
 			}
 		}else{
 			//say the task
-			voice.say(prop.getProperty("task-prefix") + " " + tasks[task] + " " + prop.getProperty("task-suffix"), prop.getProperty("allow-overlap").compareTo("true") == 0 ? true : false);
+			voice.say(prop.getProperty("task-prefix") + " " + tasks[task] + " " + prop.getProperty("task-suffix"), true);
 			
+			System.out.println("Adding sheet");
 			record.addSheet(tasks[task]);
 			record.enabled(true);
 

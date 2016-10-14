@@ -86,7 +86,7 @@ public class Main {
 		controller.addListener(leapListener);
 		
 		//create TTS and attach
-		blockControl.setVoice(new TTS());
+		blockControl.setVoice(new TTS(prop.getProperty("allow-overlap").compareTo("true") == 0 ? true : false, prop.getProperty("prioritize-task").compareTo("true") == 0 ? true : false));
 
 		init(blockControl);
 

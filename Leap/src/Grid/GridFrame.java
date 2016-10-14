@@ -178,7 +178,7 @@ public class GridFrame extends JFrame{
 		}
 
 		public void mouseExited(MouseEvent e){
-			t.cancel();
+			if(t != null) t.cancel();
 		}
 
 		private void sayName(String str){
@@ -193,7 +193,7 @@ public class GridFrame extends JFrame{
 					e.printStackTrace();
 				}
 			}else{
-				voice.say(str, speakOverlap);
+				voice.say(str, false);
 			}
 		}
 	}
