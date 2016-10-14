@@ -78,32 +78,44 @@ public class RecordManager {
 		recordLock.unlock();
 	}
 	
-	public void addRecord(String timestamp, Vector v, Point p){
+	public void addRecord(Vector v, Point p){
 		if(sheet == null || !enabled) return;
+		System.out.println("Adding record on sheet " + sheet.getName() + " on row " + sheetRow);
 		
 		recordLock.lock();
 		try {
-			sheet.addCell(new Label(0, sheetRow, timestamp));
-			sheet.addCell(new Label(1, sheetRow, "" + v.getX()));
-			sheet.addCell(new Label(2, sheetRow, "" + v.getY()));
-			sheet.addCell(new Label(3, sheetRow, "" + v.getZ()));
-			sheet.addCell(new Label(4, sheetRow, "" + p.x));
-			sheet.addCell(new Label(5, sheetRow, "" + p.y));
+			java.util.Date date= new java.util.Date();
+			sheet.addCell(new Label(0, sheetRow, "" + new Timestamp(date.getTime())));
+			//if we are initializing a sheet, mag will be 0
+			if(v.magnitude() != 0){
+				sheet.addCell(new Label(1, sheetRow, "" + v.getX()));
+				sheet.addCell(new Label(2, sheetRow, "" + v.getY()));
+				sheet.addCell(new Label(3, sheetRow, "" + v.getZ()));
+				sheet.addCell(new Label(4, sheetRow, "" + p.x));
+				sheet.addCell(new Label(5, sheetRow, "" + p.y));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		recordLock.unlock();
 		sheetRow++;
+		recordLock.unlock();
 		//System.out.println(sheetRow);
 	}
 	
 	public void addClick(String panelName){
+		System.out.println("Adding click for " + panelName + " on sheet " + sheet.getName() + " on row " + sheetRow);
 		if(sheet == null) return;
+
+		recordLock.lock();
 		try {
-			sheet.addCell(new Label(6, sheetRow - 1, panelName));
+			java.util.Date date= new java.util.Date();
+			sheet.addCell(new Label(0, sheetRow, "" + new Timestamp(date.getTime())));
+			sheet.addCell(new Label(6, sheetRow, panelName));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		sheetRow++;
+		recordLock.unlock();
 	}
 	
 	//write final before closing
@@ -127,7 +139,7 @@ public class RecordManager {
 			if(sheet != null && !b){
 			    sheet.addCell(new Formula(9, 8, "A3"));
 				sheet.addCell(new Formula(9, 9, "A" + sheetRow));
-				sheet.addCell(new Formula(9, 11, "COUNTA(G3:G" + sheetRow));
+				sheet.addCell(new Formula(9, 11, "COUNTA(G3:G" + sheetRow + 1));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

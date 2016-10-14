@@ -70,8 +70,7 @@ public class LeapMouseListener extends Listener {
 
 				Point screenPos = normalize(pos);
 				if(screenPos != null){
-					java.util.Date date= new java.util.Date();
-					record.addRecord("" + new Timestamp(date.getTime()), pos, screenPos);
+					record.addRecord(pos, screenPos);
 
 					//move mouse
 					robot.mouseMove(screenPos.x, screenPos.y);	

@@ -57,7 +57,7 @@ public class TaskManager extends Thread {
 		
 		System.out.println("Executing task: " + tasks[task]);
 		//sleep for n seconds if task is 'wait n'
-		if(tasks[task].toLowerCase().contains("wait")){
+		if(tasks[task].toLowerCase().trim().length() >= 4 && tasks[task].toLowerCase().trim().substring(0, 4).compareTo("wait") == 0){
 			try {
 				record.enabled(false);
 				int sleep = Integer.parseInt(tasks[task].replaceAll("[^0-9]","")) * 1000;
@@ -70,13 +70,11 @@ public class TaskManager extends Thread {
 			//say the task
 			voice.say(prop.getProperty("task-prefix") + " " + tasks[task] + " " + prop.getProperty("task-suffix"), true);
 			
-			System.out.println("Adding sheet");
 			record.addSheet(tasks[task]);
 			record.enabled(true);
 
 		    //insert initial timestamp
-			java.util.Date date= new java.util.Date();
-			record.addRecord("" + new Timestamp(date.getTime()), new Vector(0, 0, 0), new Point(0, 0));
+			record.addRecord(new Vector(0, 0, 0), new Point(0, 0));
 		}
 	}
 	
