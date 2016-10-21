@@ -80,7 +80,6 @@ public class RecordManager {
 	
 	public void addRecord(Vector v, Point p){
 		if(sheet == null || !enabled) return;
-		System.out.println("Adding record on sheet " + sheet.getName() + " on row " + sheetRow);
 		
 		recordLock.lock();
 		try {
@@ -103,7 +102,6 @@ public class RecordManager {
 	}
 	
 	public void addClick(String panelName){
-		System.out.println("Adding click for " + panelName + " on sheet " + sheet.getName() + " on row " + sheetRow);
 		if(sheet == null) return;
 
 		recordLock.lock();

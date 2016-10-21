@@ -134,7 +134,6 @@ public class GridFrame extends JFrame{
 		queue.offer(name);
 
 		//send clicked name to record manager
-		System.out.println("CLICK");
 		record.addClick(name);
 		
 		if(name.compareTo("Back") == 0)
